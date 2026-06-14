@@ -22,6 +22,34 @@
     "settings": "设置",
     "updateBadge": "更新"
   },
+  "app": {
+    "startup": {
+      "failed": "服务器启动失败",
+      "retry": "重试",
+      "loadingMessages": [
+        "正在预热张量…",
+        "正在校准合成引擎…",
+        "正在初始化声音模型…",
+        "正在加载神经网络…",
+        "正在准备音频管线…",
+        "正在优化波形生成器…",
+        "正在调谐频率分析器…",
+        "正在构建声音嵌入…",
+        "正在配置文本转语音核心…",
+        "正在同步音频缓冲区…",
+        "正在建立模型连接…",
+        "正在预处理训练数据…",
+        "正在验证声音样本…",
+        "正在编译推理引擎…",
+        "正在映射音素序列…",
+        "正在对齐韵律参数…",
+        "正在激活语音合成…",
+        "正在微调声学模型…",
+        "正在准备声音克隆矩阵…",
+        "正在初始化 Qwen TTS 框架…"
+      ]
+    }
+  },
   "captures": {
     "title": "捕获",
     "beta": "Beta",
@@ -287,6 +315,7 @@
       "referenceRequired": "添加样本时需要参考文本",
       "sampleRequired": "需要音频样本",
       "referenceTextRequired": "需要参考文本",
+      "referenceTextTooLong": "参考文本必须少于 1000 个字符",
       "audioTooLong": "音频过长({{duration}})。最大时长为 {{max}}。",
       "audioFailed": "音频文件验证失败。请尝试其他文件。"
     },
@@ -357,8 +386,27 @@
     "captureComplete": "捕获完成",
     "captureAgain": "重新捕获"
   },
+  "audioPlayer": {
+    "play": "播放",
+    "pause": "暂停",
+    "notLoaded": "音频尚未加载",
+    "position": "播放位置",
+    "positionValue": "{{current}} / {{total}}",
+    "toggleLoop": "切换循环播放",
+    "loop": "循环播放",
+    "stopLooping": "停止循环播放",
+    "volume": "音量",
+    "mute": "静音",
+    "unmute": "取消静音",
+    "volumeLevel": "音量 {{percent}}%",
+    "close": "关闭播放器"
+  },
   "sampleList": {
     "loading": "加载样本中…",
+    "dialog": {
+      "title": "添加音频样本",
+      "description": "上传音频文件，并提供与音频内容一致的参考文本。"
+    },
     "empty": {
       "title": "暂无样本",
       "hint": "添加第一个音频样本以开始"
@@ -384,6 +432,9 @@
       "positionValue": "{{current}} / {{total}}"
     },
     "toast": {
+      "added": "样本已添加",
+      "addedDescription": "音频样本已成功添加。",
+      "addFailed": "添加样本失败",
       "invalidText": "文本无效",
       "invalidTextDescription": "参考文本不能为空。",
       "updated": "样本已更新",
@@ -419,6 +470,11 @@
     "newPreset": "新建预设",
     "noDescription": "无描述",
     "placeholder": "选择一个预设或创建新的",
+    "generationPicker": {
+      "select": "选择生成记录…",
+      "searchPlaceholder": "按声音或文本搜索…",
+      "empty": "未找到生成记录"
+    },
     "effectCount_one": "{{count}} 个效果",
     "effectCount_other": "{{count}} 个效果",
     "sections": {
@@ -596,6 +652,43 @@
       "descriptionLabel": "描述(可选)",
       "descriptionPlaceholder": "一段对话……"
     },
+    "editor": {
+      "volumeTitle": "音量 — {{percent}}%",
+      "adjustClipVolume": "调整片段音量",
+      "volume": "音量",
+      "clipVolume": "片段音量",
+      "resizeTrackEditor": "调整轨道编辑器大小",
+      "playPauseTitle": "播放/暂停 (Space)",
+      "splitTitle": "在播放头处分割 (S)",
+      "splitAtPlayhead": "在播放头处分割",
+      "duplicateTitle": "复制 (Cmd/Ctrl+D)",
+      "duplicateClip": "复制片段",
+      "deleteTitle": "删除 (Delete/Backspace)",
+      "deleteClip": "删除片段",
+      "regenerateClip": "重新生成片段",
+      "changeVersion": "切换版本/录制条",
+      "zoom": "缩放：",
+      "zoomOut": "缩小",
+      "zoomIn": "放大",
+      "addTrackAbove": "在上方添加轨道",
+      "addTrackBelow": "在下方添加轨道",
+      "seekTimeline": "定位时间线",
+      "trimStart": "裁剪开头",
+      "trimEnd": "裁剪结尾",
+      "zoomFromLeft": "从左边缘缩放",
+      "zoomFromRight": "从右边缘缩放",
+      "updateVolumeFailed": "更新音量失败",
+      "toast": {
+        "setVersionFailed": "设置版本失败",
+        "trimFailed": "裁剪片段失败",
+        "invalidSplit": "分割点无效",
+        "invalidSplitDescription": "播放头必须位于所选片段内部",
+        "splitFailed": "分割片段失败",
+        "duplicateFailed": "复制片段失败",
+        "deleteFailed": "删除片段失败",
+        "moveFailed": "移动项目失败"
+      }
+    },
     "toast": {
       "nameRequired": "请输入名称",
       "nameRequiredDescription": "请输入故事名称",
@@ -646,13 +739,24 @@
   },
   "history": {
     "empty": "暂无语音生成…",
+    "status": {
+      "failed": "失败",
+      "loadingModel": "加载模型中…"
+    },
+    "transcriptLabel": "来自 {{name}} 的样本转录，{{duration}}",
     "actions": {
       "menu": "操作",
       "play": "播放",
       "exportAudio": "导出音频",
       "exportPackage": "导出包",
       "applyEffects": "应用效果",
-      "regenerate": "重新生成"
+      "regenerate": "重新生成",
+      "favorite": "收藏",
+      "unfavorite": "取消收藏",
+      "toggleVersions": "切换版本",
+      "retry": "重试生成",
+      "delete": "删除生成记录",
+      "cancel": "取消生成"
     },
     "deleteDialog": {
       "title": "删除生成",
@@ -769,6 +873,13 @@
         "updatedTitle": "服务器 URL 已更新",
         "updatedDescription": "已连接到 {{url}}"
       },
+      "serverConnection": {
+        "title": "服务器连接",
+        "update": "更新连接"
+      },
+      "serverStatus": {
+        "title": "服务器状态"
+      },
       "keepServerRunning": {
         "title": "关闭应用时保持服务器运行",
         "description": "关闭应用后,服务器将继续在后台运行。",
@@ -788,10 +899,22 @@
       "connection": {
         "connecting": "连接中",
         "offline": "离线",
-        "online": "在线"
+        "online": "在线",
+        "checking": "正在检查连接…",
+        "connected": "已连接",
+        "failed": "连接失败：{{message}}",
+        "modelReady": "模型已就绪",
+        "noModel": "无模型",
+        "gpuStatus": "GPU：{{status}}",
+        "available": "可用",
+        "notAvailable": "不可用"
       },
       "updates": {
         "title": "应用更新",
+        "currentVersion": "当前版本",
+        "version": "版本 {{version}}",
+        "availableTitle": "有可用更新",
+        "newBadge": "新",
         "devSuffix": " (开发版)",
         "devMode": {
           "title": "开发模式",
@@ -805,16 +928,29 @@
           "button": "检查"
         },
         "error": "更新错误",
+        "checking": "正在检查更新…",
         "download": {
           "title": "更新到 {{version}}",
           "description": "下载并安装最新版本。",
-          "button": "下载"
+          "button": "下载更新"
         },
         "downloading": "下载更新中…",
         "ready": {
           "title": "更新已准备就绪",
           "description": "版本 {{version}} 已下载。重启以完成。",
+          "downloaded": "版本 {{version}} 已下载",
+          "restartDescription": "应用需要重启才能完成安装。您可以现在重启，也可以稍后再处理。",
           "button": "立即重启"
+        },
+        "toast": {
+          "availableTitle": "有可用更新",
+          "availableDescription": "版本 {{version}} 已可下载。",
+          "updateNow": "立即更新",
+          "downloadingTitle": "正在下载更新",
+          "readyTitle": "更新已就绪",
+          "readyDescription": "版本 {{version}} 已下载并可安装。",
+          "restartNow": "立即重启",
+          "failedTitle": "更新失败"
         }
       },
       "api": {
@@ -1085,6 +1221,7 @@
       }
     },
     "gpu": {
+      "title": "GPU 加速",
       "cpuOnly": "仅 CPU",
       "vramUsed": "{{mb}} MB 显存",
       "noAcceleration": "未检测到 GPU 加速",
@@ -1156,6 +1293,15 @@
     "subtitle": "下载和管理用于语音生成和转录的 AI 模型",
     "defaultName": "模型",
     "unknownSize": "未知大小",
+    "downloadToast": {
+      "connecting": "正在连接下载…",
+      "processing": "处理中…",
+      "complete": "下载完成",
+      "failed": "下载失败。详情请查看问题面板。",
+      "downloading": "下载中…",
+      "extracting": "解压中…",
+      "trackFailed": "无法跟踪下载进度"
+    },
     "sections": {
       "voiceGeneration": "语音生成",
       "transcription": "语音转录",

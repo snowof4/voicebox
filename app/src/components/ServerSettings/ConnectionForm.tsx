@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, XCircle } from 'lucide-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import * as z from 'zod';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -22,13 +23,12 @@ import { useServerHealth } from '@/lib/hooks/useServer';
 import { usePlatform } from '@/platform/PlatformContext';
 import { useServerStore } from '@/stores/serverStore';
 
-const connectionSchema = z.object({
-  serverUrl: z.string().url('Please enter a valid URL'),
-});
-
-type ConnectionFormValues = z.infer<typeof connectionSchema>;
+type ConnectionFormValues = {
+  serverUrl: string;
+};
 
 export function ConnectionForm() {
+  const { t } = useTranslation();
   const platform = usePlatform();
   const serverUrl = useServerStore((state) => state.serverUrl);
   const setServerUrl = useServerStore((state) => state.setServerUrl);
@@ -38,6 +38,9 @@ export function ConnectionForm() {
   const setMode = useServerStore((state) => state.setMode);
   const { toast } = useToast();
   const { data: health, isLoading, error: healthError } = useServerHealth();
+  const connectionSchema = z.object({
+    serverUrl: z.string().url(t('settings.general.serverUrl.invalidUrl')),
+  });
 
   const form = useForm<ConnectionFormValues>({
     resolver: zodResolver(connectionSchema),
@@ -57,15 +60,15 @@ export function ConnectionForm() {
     setServerUrl(data.serverUrl);
     form.reset(data);
     toast({
-      title: 'Server URL updated',
-      description: `Connected to ${data.serverUrl}`,
+      title: t('settings.general.serverUrl.updatedTitle'),
+      description: t('settings.general.serverUrl.updatedDescription', { url: data.serverUrl }),
     });
   }
 
   return (
-    <Card role="region" aria-label="Server Connection" tabIndex={0}>
+    <Card role="region" aria-label={t('settings.general.serverConnection.title')} tabIndex={0}>
       <CardHeader>
-        <CardTitle>Server Connection</CardTitle>
+        <CardTitle>{t('settings.general.serverConnection.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -75,17 +78,19 @@ export function ConnectionForm() {
               name="serverUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Server URL</FormLabel>
+                  <FormLabel>{t('settings.general.serverUrl.title')}</FormLabel>
                   <FormControl>
                     <Input placeholder="http://127.0.0.1:17493" {...field} />
                   </FormControl>
-                  <FormDescription>Enter the URL of your voicebox backend server</FormDescription>
+                  <FormDescription>{t('settings.general.serverUrl.description')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {isDirty && <Button type="submit">Update Connection</Button>}
+            {isDirty && (
+              <Button type="submit">{t('settings.general.serverConnection.update')}</Button>
+            )}
           </form>
         </Form>
 
@@ -94,13 +99,15 @@ export function ConnectionForm() {
           {isLoading ? (
             <div className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm text-muted-foreground">Checking connection...</span>
+              <span className="text-sm text-muted-foreground">
+                {t('settings.general.connection.checking')}
+              </span>
             </div>
           ) : healthError ? (
             <div className="flex items-center gap-2">
               <XCircle className="h-4 w-4 text-destructive" />
               <span className="text-sm text-destructive">
-                Connection failed: {healthError.message}
+                {t('settings.general.connection.failed', { message: healthError.message })}
               </span>
             </div>
           ) : health ? (
@@ -108,10 +115,16 @@ export function ConnectionForm() {
               <Badge
                 variant={health.model_loaded || health.model_downloaded ? 'default' : 'secondary'}
               >
-                {health.model_loaded || health.model_downloaded ? 'Model Ready' : 'No Model'}
+                {health.model_loaded || health.model_downloaded
+                  ? t('settings.general.connection.modelReady')
+                  : t('settings.general.connection.noModel')}
               </Badge>
               <Badge variant={health.gpu_available ? 'default' : 'secondary'}>
-                GPU: {health.gpu_available ? 'Available' : 'Not Available'}
+                {t('settings.general.connection.gpuStatus', {
+                  status: health.gpu_available
+                    ? t('settings.general.connection.available')
+                    : t('settings.general.connection.notAvailable'),
+                })}
               </Badge>
               {health.vram_used_mb != null && health.vram_used_mb > 0 && (
                 <Badge variant="outline">VRAM: {health.vram_used_mb.toFixed(0)} MB</Badge>
@@ -132,10 +145,10 @@ export function ConnectionForm() {
                   console.error('Failed to sync setting to Rust:', error);
                 });
                 toast({
-                  title: 'Setting updated',
+                  title: t('settings.general.keepServerRunning.updatedTitle'),
                   description: checked
-                    ? 'Server will continue running when app closes'
-                    : 'Server will stop when app closes',
+                    ? t('settings.general.keepServerRunning.runningDescription')
+                    : t('settings.general.keepServerRunning.stoppedDescription'),
                 });
               }}
             />
@@ -144,11 +157,10 @@ export function ConnectionForm() {
                 htmlFor="keepServerRunning"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
               >
-                Keep server running when app closes
+                {t('settings.general.keepServerRunning.title')}
               </label>
               <p className="text-sm text-muted-foreground">
-                When enabled, the server will continue running in the background after closing the
-                app. Disabled by default.
+                {t('settings.general.keepServerRunning.description')}
               </p>
             </div>
           </div>
@@ -164,10 +176,10 @@ export function ConnectionForm() {
                 onCheckedChange={(checked: boolean) => {
                   setMode(checked ? 'remote' : 'local');
                   toast({
-                    title: 'Setting updated',
+                    title: t('settings.general.networkAccess.updatedTitle'),
                     description: checked
-                      ? 'Network access enabled. Restart the app to apply.'
-                      : 'Network access disabled. Restart the app to apply.',
+                      ? t('settings.general.networkAccess.enabled')
+                      : t('settings.general.networkAccess.disabled'),
                   });
                 }}
               />
@@ -176,11 +188,10 @@ export function ConnectionForm() {
                   htmlFor="allowNetworkAccess"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                 >
-                  Allow network access
+                  {t('settings.general.networkAccess.title')}
                 </label>
                 <p className="text-sm text-muted-foreground">
-                  Makes the server accessible from other devices on your network. Restart the app
-                  after changing this setting.
+                  {t('settings.general.networkAccess.description')}
                 </p>
               </div>
             </div>

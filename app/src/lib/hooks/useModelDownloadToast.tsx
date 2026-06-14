@@ -1,5 +1,6 @@
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/components/ui/use-toast';
 import type { ModelProgress } from '@/lib/api/types';
@@ -25,6 +26,7 @@ export function useModelDownloadToast({
   onError,
 }: UseModelDownloadToastOptions) {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const serverUrl = useServerStore((state) => state.serverUrl);
   const toastIdRef = useRef<string | null>(null);
   // biome-ignore lint: Using any for toast update ref to handle complex toast types
@@ -60,7 +62,7 @@ export function useModelDownloadToast({
       description: (
         <div className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Connecting to download...</span>
+          <span>{t('models.downloadToast.connecting')}</span>
         </div>
       ),
       duration: Infinity, // Don't auto-dismiss, we'll handle it manually
@@ -92,24 +94,24 @@ export function useModelDownloadToast({
 
           // Determine status icon and text
           let statusIcon: React.ReactNode = null;
-          let statusText = 'Processing...';
+          let statusText = t('models.downloadToast.processing');
 
           switch (progress.status) {
             case 'complete':
               statusIcon = <CheckCircle2 className="h-4 w-4 text-green-500" />;
-              statusText = 'Download complete';
+              statusText = t('models.downloadToast.complete');
               break;
             case 'error':
               statusIcon = <XCircle className="h-4 w-4 text-destructive" />;
-              statusText = 'Download failed. See Problems panel for details.';
+              statusText = t('models.downloadToast.failed');
               break;
             case 'downloading':
               statusIcon = <Loader2 className="h-4 w-4 animate-spin" />;
-              statusText = progress.filename || 'Downloading...';
+              statusText = progress.filename || t('models.downloadToast.downloading');
               break;
             case 'extracting':
               statusIcon = <Loader2 className="h-4 w-4 animate-spin" />;
-              statusText = 'Extracting...';
+              statusText = t('models.downloadToast.extracting');
               break;
           }
 
@@ -158,7 +160,7 @@ export function useModelDownloadToast({
                     <span>{displayName}</span>
                   </div>
                 ),
-                description: 'Download complete',
+                description: t('models.downloadToast.complete'),
                 duration: 3000,
               });
             }
@@ -169,7 +171,7 @@ export function useModelDownloadToast({
               onComplete();
             } else if (isError && onError) {
               console.log('[useModelDownloadToast] Download error, calling onError callback');
-              onError(progress.error || 'Unknown error');
+              onError(progress.error || t('common.unknownError'));
             }
           }
         }
@@ -188,7 +190,7 @@ export function useModelDownloadToast({
       if (toastIdRef.current && toastUpdateRef.current) {
         toastUpdateRef.current({
           title: displayName,
-          description: 'Failed to track download progress',
+          description: t('models.downloadToast.trackFailed'),
           variant: 'destructive',
           duration: 5000,
         });
@@ -208,7 +210,7 @@ export function useModelDownloadToast({
       }
       // Note: We don't dismiss the toast here as it might still be showing completion state
     };
-  }, [enabled, serverUrl, modelName, displayName, toast, formatBytes, onComplete, onError]);
+  }, [enabled, serverUrl, modelName, displayName, toast, formatBytes, onComplete, onError, t]);
 
   return {
     isTracking: enabled && eventSourceRef.current !== null,

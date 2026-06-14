@@ -1,5 +1,6 @@
 import { Download, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Progress } from '@/components/ui/progress';
 import { ToastAction } from '@/components/ui/toast';
 import { useToast } from '@/components/ui/use-toast';
@@ -23,6 +24,7 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
 
   const platform = usePlatform();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [status, setStatus] = useState<UpdateStatus>(platform.updater.getStatus());
   const hasCheckedRef = useRef(false);
   const toastIdRef = useRef<string | null>(null);
@@ -92,12 +94,17 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
     };
 
     const toastResult = toast({
-      title: 'Update Available',
-      description: `Version ${status.version} is ready to download.`,
+      title: t('settings.general.updates.toast.availableTitle'),
+      description: t('settings.general.updates.toast.availableDescription', {
+        version: status.version,
+      }),
       duration: Infinity,
       action: (
-        <ToastAction altText="Update now" onClick={handleUpdateNow}>
-          Update Now
+        <ToastAction
+          altText={t('settings.general.updates.toast.updateNow')}
+          onClick={handleUpdateNow}
+        >
+          {t('settings.general.updates.toast.updateNow')}
         </ToastAction>
       ),
     });
@@ -113,6 +120,7 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
     status.version,
     downloadAndInstall,
     toast,
+    t,
   ]);
 
   // Update toast when downloading
@@ -133,12 +141,14 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
       title: (
         <div className="flex items-center gap-2">
           <Download className="h-4 w-4 animate-pulse" />
-          <span>Downloading Update</span>
+          <span>{t('settings.general.updates.toast.downloadingTitle')}</span>
         </div>
       ),
       description: (
         <div className="space-y-2">
-          <div className="text-sm">Version {status.version}</div>
+          <div className="text-sm">
+            {t('settings.general.updates.version', { version: status.version })}
+          </div>
           {progressPercent > 0 && (
             <>
               <Progress value={progressPercent} className="h-2" />
@@ -156,6 +166,7 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
     status.downloadedBytes,
     status.totalBytes,
     status.version,
+    t,
   ]);
 
   // Update toast when ready to install
@@ -169,17 +180,22 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
     };
 
     toastUpdateRef.current({
-      title: 'Update Ready',
-      description: `Version ${status.version} has been downloaded and is ready to install.`,
+      title: t('settings.general.updates.toast.readyTitle'),
+      description: t('settings.general.updates.toast.readyDescription', {
+        version: status.version,
+      }),
       duration: Infinity,
       action: (
-        <ToastAction altText="Restart now" onClick={handleRestartNow}>
+        <ToastAction
+          altText={t('settings.general.updates.toast.restartNow')}
+          onClick={handleRestartNow}
+        >
           <RefreshCw className="h-3 w-3 mr-1" />
-          Restart Now
+          {t('settings.general.updates.toast.restartNow')}
         </ToastAction>
       ),
     });
-  }, [showToast, status.readyToInstall, status.version, restartAndInstall]);
+  }, [showToast, status.readyToInstall, status.version, restartAndInstall, t]);
 
   // Handle errors in toast
   useEffect(() => {
@@ -188,7 +204,7 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
     }
 
     toastUpdateRef.current({
-      title: 'Update Failed',
+      title: t('settings.general.updates.toast.failedTitle'),
       description: status.error,
       variant: 'destructive',
       duration: 5000,
@@ -198,7 +214,7 @@ export function useAutoUpdater(options: boolean | UseAutoUpdaterOptions = false)
       toastIdRef.current = null;
       toastUpdateRef.current = null;
     }, 5000);
-  }, [showToast, status.error]);
+  }, [showToast, status.error, t]);
 
   return {
     status,

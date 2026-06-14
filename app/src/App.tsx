@@ -1,5 +1,6 @@
 import { RouterProvider } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import voiceboxLogo from '@/assets/voicebox-logo.png';
 import { DictateWindow } from '@/components/DictateWindow/DictateWindow';
 import ShinyText from '@/components/ShinyText';
@@ -52,29 +53,6 @@ function isPortInUseError(error: unknown): boolean {
   );
 }
 
-const LOADING_MESSAGES = [
-  'Warming up tensors...',
-  'Calibrating synthesizer engine...',
-  'Initializing voice models...',
-  'Loading neural networks...',
-  'Preparing audio pipelines...',
-  'Optimizing waveform generators...',
-  'Tuning frequency analyzers...',
-  'Building voice embeddings...',
-  'Configuring text-to-speech cores...',
-  'Syncing audio buffers...',
-  'Establishing model connections...',
-  'Preprocessing training data...',
-  'Validating voice samples...',
-  'Compiling inference engines...',
-  'Mapping phoneme sequences...',
-  'Aligning prosody parameters...',
-  'Activating speech synthesis...',
-  'Fine-tuning acoustic models...',
-  'Preparing voice cloning matrices...',
-  'Initializing Qwen TTS framework...',
-];
-
 function App() {
   useThemeSync();
 
@@ -89,11 +67,15 @@ function App() {
 }
 
 function MainApp() {
+  const { t } = useTranslation();
   const platform = usePlatform();
   const [serverReady, setServerReady] = useState(false);
   const [startupError, setStartupError] = useState<string | null>(null);
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const serverStartingRef = useRef(false);
+  const loadingMessages = t('app.startup.loadingMessages', {
+    returnObjects: true,
+  }) as string[];
 
   // Automatically check for app updates on startup and show toast notifications
   useAutoUpdater({ checkOnMount: true, showToast: true });
@@ -242,11 +224,11 @@ function MainApp() {
     }
 
     const interval = setInterval(() => {
-      setLoadingMessageIndex((prev) => (prev + 1) % LOADING_MESSAGES.length);
+      setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [serverReady, platform.metadata.isTauri]);
+  }, [serverReady, platform.metadata.isTauri, loadingMessages.length]);
 
   // Show loading screen while server is starting in Tauri
   if (platform.metadata.isTauri && !serverReady) {
@@ -271,7 +253,9 @@ function MainApp() {
           </div>
           {startupError ? (
             <div className="animate-fade-in-delayed max-w-md mx-auto space-y-3">
-              <p className="text-lg font-medium text-destructive">Server startup failed</p>
+              <p className="text-lg font-medium text-destructive">
+                {t('app.startup.failed')}
+              </p>
               <p className="text-sm text-muted-foreground">{startupError}</p>
               <button
                 type="button"
@@ -283,13 +267,13 @@ function MainApp() {
                   window.location.reload();
                 }}
               >
-                Retry
+                {t('app.startup.retry')}
               </button>
             </div>
           ) : (
             <div className="animate-fade-in-delayed">
               <ShinyText
-                text={LOADING_MESSAGES[loadingMessageIndex]}
+                text={loadingMessages[loadingMessageIndex % loadingMessages.length]}
                 className="text-lg font-medium text-muted-foreground"
                 speed={2}
                 color="hsl(var(--muted-foreground))"

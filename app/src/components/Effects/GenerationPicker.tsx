@@ -1,5 +1,6 @@
 import { ChevronDown, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,6 +15,7 @@ interface GenerationPickerProps {
 }
 
 export function GenerationPicker({ selectedId, onSelect, className }: GenerationPickerProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -52,7 +54,7 @@ export function GenerationPicker({ selectedId, onSelect, className }: Generation
               </span>
             </span>
           ) : (
-            <span className="text-muted-foreground">Select a generation...</span>
+            <span className="text-muted-foreground">{t('effects.generationPicker.select')}</span>
           )}
           <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
         </Button>
@@ -62,7 +64,7 @@ export function GenerationPicker({ selectedId, onSelect, className }: Generation
           <div className="relative">
             <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
-              placeholder="Search by voice or text..."
+              placeholder={t('effects.generationPicker.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-8 pl-7 text-xs"
@@ -72,7 +74,7 @@ export function GenerationPicker({ selectedId, onSelect, className }: Generation
         <div className="max-h-60 overflow-y-auto">
           {filtered.length === 0 ? (
             <div className="p-4 text-center text-xs text-muted-foreground">
-              No generations found
+              {t('effects.generationPicker.empty')}
             </div>
           ) : (
             filtered.map((gen) => (

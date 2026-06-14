@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AlertCircle, Download, Loader2, RotateCw, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -13,6 +14,7 @@ import { useServerStore } from '@/stores/serverStore';
 type RestartPhase = 'idle' | 'stopping' | 'waiting' | 'ready';
 
 export function GpuAcceleration() {
+  const { t } = useTranslation();
   const platform = usePlatform();
   const queryClient = useQueryClient();
   const serverUrl = useServerStore((state) => state.serverUrl);
@@ -70,7 +72,7 @@ export function GpuAcceleration() {
           refetchCudaStatus();
         } else if (data.status === 'error') {
           eventSource.close();
-          setError(data.error || 'Download failed');
+          setError(data.error || t('settings.gpu.errors.downloadFailed'));
           setDownloadProgress(null);
           refetchCudaStatus();
         }
@@ -86,7 +88,7 @@ export function GpuAcceleration() {
     return () => {
       eventSource.close();
     };
-  }, [cudaDownloading, serverUrl, refetchCudaStatus]);
+  }, [cudaDownloading, serverUrl, refetchCudaStatus, t]);
 
   // Start aggressive health polling during restart
   const startHealthPolling = useCallback(() => {
@@ -119,7 +121,7 @@ export function GpuAcceleration() {
       await apiClient.downloadCudaBackend();
       refetchCudaStatus();
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to start download';
+      const msg = e instanceof Error ? e.message : t('settings.gpu.errors.downloadStart');
       if (msg.includes('already downloaded')) {
         refetchCudaStatus();
       } else {
@@ -150,7 +152,7 @@ export function GpuAcceleration() {
         clearInterval(healthPollRef.current);
         healthPollRef.current = null;
       }
-      setError(e instanceof Error ? e.message : 'Restart failed');
+      setError(e instanceof Error ? e.message : t('settings.gpu.errors.restartFailed'));
     }
   };
 
@@ -179,7 +181,7 @@ export function GpuAcceleration() {
         clearInterval(healthPollRef.current);
         healthPollRef.current = null;
       }
-      setError(e instanceof Error ? e.message : 'Failed to switch to CPU');
+      setError(e instanceof Error ? e.message : t('settings.gpu.errors.switchCpu'));
       refetchCudaStatus();
     }
   };
@@ -190,7 +192,7 @@ export function GpuAcceleration() {
       await apiClient.deleteCudaBackend();
       refetchCudaStatus();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Failed to delete CUDA backend');
+      setError(e instanceof Error ? e.message : t('settings.gpu.errors.deleteCuda'));
     }
   };
 
@@ -211,11 +213,18 @@ export function GpuAcceleration() {
     !isCurrentlyCuda &&
     health.gpu_type &&
     !health.gpu_type.includes('CUDA');
+  const restartPhaseLabel = {
+    stopping: t('settings.gpu.restart.stopping'),
+    waiting: t('settings.gpu.restart.waiting'),
+    ready: t('settings.gpu.restart.ready'),
+  } satisfies Record<Exclude<RestartPhase, 'idle'>, string>;
+  const getRestartPhaseLabel = (phase: RestartPhase) =>
+    phase === 'idle' ? '' : restartPhaseLabel[phase];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>GPU Acceleration</CardTitle>
+        <CardTitle>{t('settings.gpu.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* GPU status */}
@@ -229,14 +238,18 @@ export function GpuAcceleration() {
               <div className="text-sm text-muted-foreground">
                 {health.gpu_type.replace(/\s*\(.+\)$/, '')}
                 {health.vram_used_mb != null && health.vram_used_mb > 0
-                  ? ` \u00b7 ${health.vram_used_mb.toFixed(0)} MB VRAM used`
+                  ? ` \u00b7 ${t('settings.gpu.vramUsed', {
+                      mb: health.vram_used_mb.toFixed(0),
+                    })}`
                   : ''}
               </div>
             </>
           ) : (
             <>
               <div className="text-sm font-medium">CPU</div>
-              <div className="text-sm text-muted-foreground">No GPU acceleration available</div>
+              <div className="text-sm text-muted-foreground">
+                {t('settings.gpu.noAcceleration')}
+              </div>
             </>
           )}
         </div>
@@ -249,21 +262,16 @@ export function GpuAcceleration() {
             {restartPhase !== 'idle' ? (
               <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">
-                  {restartPhase === 'stopping' && 'Stopping server...'}
-                  {restartPhase === 'waiting' && 'Restarting server...'}
-                  {restartPhase === 'ready' && 'Server restarted successfully!'}
-                </span>
+                <span className="text-sm">{getRestartPhaseLabel(restartPhase)}</span>
               </div>
             ) : (
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Running with CUDA GPU acceleration. Switch back to CPU if needed (you can
-                  re-download later).
+                  {t('settings.gpu.switchToCpu.description')}
                 </p>
                 <Button onClick={handleSwitchToCpu} variant="outline" className="w-full" size="sm">
                   <RotateCw className="h-4 w-4 mr-2" />
-                  Switch to CPU Backend
+                  {t('settings.gpu.switchToCpu.title')}
                 </Button>
               </div>
             )}
@@ -288,8 +296,8 @@ export function GpuAcceleration() {
                     <span>
                       {downloadProgress.filename ||
                         (cudaAvailable
-                          ? 'Updating CUDA backend...'
-                          : 'Downloading CUDA backend...')}
+                          ? t('settings.gpu.cuda.updating')
+                          : t('settings.gpu.cuda.downloading'))}
                     </span>
                   </div>
                   {downloadProgress.total > 0 && (
@@ -314,11 +322,7 @@ export function GpuAcceleration() {
             {restartPhase !== 'idle' && (
               <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">
-                  {restartPhase === 'stopping' && 'Stopping server...'}
-                  {restartPhase === 'waiting' && 'Restarting server...'}
-                  {restartPhase === 'ready' && 'Server restarted successfully!'}
-                </span>
+                <span className="text-sm">{getRestartPhaseLabel(restartPhase)}</span>
               </div>
             )}
 
@@ -337,12 +341,11 @@ export function GpuAcceleration() {
                 {!cudaAvailable && (
                   <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      Download the CUDA backend (~2.4 GB) for NVIDIA GPU acceleration. Requires an
-                      NVIDIA GPU with CUDA support.
+                      {t('settings.gpu.download.description')}
                     </p>
                     <Button onClick={handleDownload} className="w-full" size="sm">
                       <Download className="h-4 w-4 mr-2" />
-                      Download CUDA Backend
+                      {t('settings.gpu.download.title')}
                     </Button>
                   </div>
                 )}
@@ -351,12 +354,11 @@ export function GpuAcceleration() {
                 {cudaAvailable && platform.metadata.isTauri && (
                   <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
-                      CUDA backend is downloaded and ready. Restart the server to enable GPU
-                      acceleration.
+                      {t('settings.gpu.switchToCuda.description')}
                     </p>
                     <Button onClick={handleRestart} className="w-full" size="sm">
                       <RotateCw className="h-4 w-4 mr-2" />
-                      Switch to CUDA Backend
+                      {t('settings.gpu.switchToCuda.title')}
                     </Button>
                   </div>
                 )}
@@ -370,7 +372,7 @@ export function GpuAcceleration() {
                     size="sm"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Remove CUDA Backend
+                    {t('settings.gpu.remove.title')}
                   </Button>
                 )}
               </div>

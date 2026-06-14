@@ -22,6 +22,34 @@
     "settings": "設定",
     "updateBadge": "更新"
   },
+  "app": {
+    "startup": {
+      "failed": "サーバーの起動に失敗しました",
+      "retry": "再試行",
+      "loadingMessages": [
+        "テンソルをウォームアップ中…",
+        "合成エンジンを調整中…",
+        "ボイスモデルを初期化中…",
+        "ニューラルネットワークを読み込み中…",
+        "オーディオパイプラインを準備中…",
+        "波形ジェネレーターを最適化中…",
+        "周波数アナライザーを調整中…",
+        "ボイス埋め込みを構築中…",
+        "テキスト読み上げコアを設定中…",
+        "オーディオバッファを同期中…",
+        "モデル接続を確立中…",
+        "トレーニングデータを前処理中…",
+        "ボイスサンプルを検証中…",
+        "推論エンジンをコンパイル中…",
+        "音素シーケンスをマッピング中…",
+        "韻律パラメーターを整列中…",
+        "音声合成を有効化中…",
+        "音響モデルを微調整中…",
+        "ボイスクローン行列を準備中…",
+        "Qwen TTS フレームワークを初期化中…"
+      ]
+    }
+  },
   "captures": {
     "title": "キャプチャ",
     "beta": "ベータ",
@@ -287,6 +315,7 @@
       "referenceRequired": "サンプルを追加する際はリファレンステキストが必須です",
       "sampleRequired": "オーディオサンプルが必要です",
       "referenceTextRequired": "リファレンステキストは必須です",
+      "referenceTextTooLong": "リファレンステキストは 1000 文字未満にしてください",
       "audioTooLong": "オーディオが長すぎます({{duration}})。最大時間は {{max}} です。",
       "audioFailed": "オーディオファイルを検証できませんでした。別のファイルをお試しください。"
     },
@@ -357,8 +386,27 @@
     "captureComplete": "キャプチャ完了",
     "captureAgain": "もう一度キャプチャ"
   },
+  "audioPlayer": {
+    "play": "再生",
+    "pause": "一時停止",
+    "notLoaded": "オーディオが読み込まれていません",
+    "position": "再生位置",
+    "positionValue": "{{current}} / {{total}}",
+    "toggleLoop": "ループを切り替え",
+    "loop": "ループ",
+    "stopLooping": "ループを停止",
+    "volume": "音量",
+    "mute": "ミュート",
+    "unmute": "ミュート解除",
+    "volumeLevel": "音量 {{percent}}%",
+    "close": "プレイヤーを閉じる"
+  },
   "sampleList": {
     "loading": "サンプルを読み込み中…",
+    "dialog": {
+      "title": "オーディオサンプルを追加",
+      "description": "オーディオファイルをアップロードし、内容に一致するリファレンステキストを入力してください。"
+    },
     "empty": {
       "title": "サンプルがまだありません",
       "hint": "最初のオーディオサンプルを追加して始めましょう"
@@ -384,6 +432,9 @@
       "positionValue": "{{current}} / {{total}}"
     },
     "toast": {
+      "added": "サンプルを追加しました",
+      "addedDescription": "オーディオサンプルを正常に追加しました。",
+      "addFailed": "サンプルの追加に失敗しました",
       "invalidText": "無効なテキスト",
       "invalidTextDescription": "リファレンステキストは空にできません。",
       "updated": "サンプルを更新しました",
@@ -419,6 +470,11 @@
     "newPreset": "新しいプリセット",
     "noDescription": "説明なし",
     "placeholder": "プリセットを選択するか、新しく作成します",
+    "generationPicker": {
+      "select": "生成を選択…",
+      "searchPlaceholder": "ボイスまたはテキストで検索…",
+      "empty": "生成が見つかりません"
+    },
     "effectCount_one": "エフェクト {{count}} 件",
     "effectCount_other": "エフェクト {{count}} 件",
     "sections": {
@@ -596,6 +652,43 @@
       "descriptionLabel": "説明(任意)",
       "descriptionPlaceholder": "例:○○と△△の会話…"
     },
+    "editor": {
+      "volumeTitle": "音量 — {{percent}}%",
+      "adjustClipVolume": "クリップ音量を調整",
+      "volume": "音量",
+      "clipVolume": "クリップ音量",
+      "resizeTrackEditor": "トラックエディターのサイズを変更",
+      "playPauseTitle": "再生/一時停止 (Space)",
+      "splitTitle": "再生ヘッドで分割 (S)",
+      "splitAtPlayhead": "再生ヘッドで分割",
+      "duplicateTitle": "複製 (Cmd/Ctrl+D)",
+      "duplicateClip": "クリップを複製",
+      "deleteTitle": "削除 (Delete/Backspace)",
+      "deleteClip": "クリップを削除",
+      "regenerateClip": "クリップを再生成",
+      "changeVersion": "バージョン/テイクを変更",
+      "zoom": "ズーム:",
+      "zoomOut": "ズームアウト",
+      "zoomIn": "ズームイン",
+      "addTrackAbove": "上にトラックを追加",
+      "addTrackBelow": "下にトラックを追加",
+      "seekTimeline": "タイムラインをシーク",
+      "trimStart": "開始位置をトリム",
+      "trimEnd": "終了位置をトリム",
+      "zoomFromLeft": "左端からズーム",
+      "zoomFromRight": "右端からズーム",
+      "updateVolumeFailed": "音量の更新に失敗しました",
+      "toast": {
+        "setVersionFailed": "バージョン設定に失敗しました",
+        "trimFailed": "クリップのトリムに失敗しました",
+        "invalidSplit": "分割位置が無効です",
+        "invalidSplitDescription": "再生ヘッドは選択したクリップ内にある必要があります",
+        "splitFailed": "クリップの分割に失敗しました",
+        "duplicateFailed": "クリップの複製に失敗しました",
+        "deleteFailed": "クリップの削除に失敗しました",
+        "moveFailed": "項目の移動に失敗しました"
+      }
+    },
     "toast": {
       "nameRequired": "名前が必要です",
       "nameRequiredDescription": "ストーリー名を入力してください",
@@ -646,13 +739,24 @@
   },
   "history": {
     "empty": "音声生成はまだありません…",
+    "status": {
+      "failed": "失敗",
+      "loadingModel": "モデルを読み込み中…"
+    },
+    "transcriptLabel": "{{name}} のサンプル文字起こし、{{duration}}",
     "actions": {
       "menu": "操作",
       "play": "再生",
       "exportAudio": "オーディオをエクスポート",
       "exportPackage": "パッケージをエクスポート",
       "applyEffects": "エフェクトを適用",
-      "regenerate": "再生成"
+      "regenerate": "再生成",
+      "favorite": "お気に入り",
+      "unfavorite": "お気に入り解除",
+      "toggleVersions": "バージョンを切り替え",
+      "retry": "生成を再試行",
+      "delete": "生成を削除",
+      "cancel": "生成をキャンセル"
     },
     "deleteDialog": {
       "title": "生成を削除",
@@ -769,6 +873,13 @@
         "updatedTitle": "サーバー URL を更新しました",
         "updatedDescription": "{{url}} に接続しました"
       },
+      "serverConnection": {
+        "title": "サーバー接続",
+        "update": "接続を更新"
+      },
+      "serverStatus": {
+        "title": "サーバーステータス"
+      },
       "keepServerRunning": {
         "title": "アプリ終了後もサーバーを起動したままにする",
         "description": "アプリを閉じた後もサーバーがバックグラウンドで動作し続けます。",
@@ -788,10 +899,22 @@
       "connection": {
         "connecting": "接続中",
         "offline": "オフライン",
-        "online": "オンライン"
+        "online": "オンライン",
+        "checking": "接続を確認中…",
+        "connected": "接続済み",
+        "failed": "接続に失敗しました: {{message}}",
+        "modelReady": "モデル準備完了",
+        "noModel": "モデルなし",
+        "gpuStatus": "GPU: {{status}}",
+        "available": "利用可能",
+        "notAvailable": "利用不可"
       },
       "updates": {
         "title": "アプリの更新",
+        "currentVersion": "現在のバージョン",
+        "version": "バージョン {{version}}",
+        "availableTitle": "更新があります",
+        "newBadge": "新規",
         "devSuffix": " (開発版)",
         "devMode": {
           "title": "開発モード",
@@ -805,16 +928,29 @@
           "button": "確認"
         },
         "error": "更新エラー",
+        "checking": "更新を確認中…",
         "download": {
           "title": "バージョン {{version}} に更新",
           "description": "最新バージョンをダウンロードしてインストールします。",
-          "button": "ダウンロード"
+          "button": "更新をダウンロード"
         },
         "downloading": "更新をダウンロード中…",
         "ready": {
           "title": "更新をインストールする準備ができました",
           "description": "バージョン {{version}} をダウンロードしました。再起動して完了します。",
+          "downloaded": "バージョン {{version}} をダウンロードしました",
+          "restartDescription": "インストールを完了するにはアプリの再起動が必要です。今すぐ再起動することも、後で行うこともできます。",
           "button": "今すぐ再起動"
+        },
+        "toast": {
+          "availableTitle": "更新があります",
+          "availableDescription": "バージョン {{version}} をダウンロードできます。",
+          "updateNow": "今すぐ更新",
+          "downloadingTitle": "更新をダウンロード中",
+          "readyTitle": "更新の準備ができました",
+          "readyDescription": "バージョン {{version}} をダウンロード済みで、インストールできます。",
+          "restartNow": "今すぐ再起動",
+          "failedTitle": "更新に失敗しました"
         }
       },
       "api": {
@@ -1085,6 +1221,7 @@
       }
     },
     "gpu": {
+      "title": "GPU アクセラレーション",
       "cpuOnly": "CPU のみ",
       "vramUsed": "VRAM 使用量 {{mb}} MB",
       "noAcceleration": "GPU アクセラレーションは検出されていません",
@@ -1156,6 +1293,15 @@
     "subtitle": "音声生成および文字起こし用の AI モデルをダウンロードして管理します",
     "defaultName": "モデル",
     "unknownSize": "サイズ不明",
+    "downloadToast": {
+      "connecting": "ダウンロードに接続中…",
+      "processing": "処理中…",
+      "complete": "ダウンロード完了",
+      "failed": "ダウンロードに失敗しました。詳細は問題パネルを確認してください。",
+      "downloading": "ダウンロード中…",
+      "extracting": "展開中…",
+      "trackFailed": "ダウンロード進捗を追跡できませんでした"
+    },
     "sections": {
       "voiceGeneration": "音声生成",
       "transcription": "文字起こし",

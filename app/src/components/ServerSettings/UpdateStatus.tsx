@@ -1,5 +1,6 @@
 import { AlertCircle, Download, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { useAutoUpdater } from '@/hooks/useAutoUpdater';
 import { usePlatform } from '@/platform/PlatformContext';
 
 export function UpdateStatus() {
+  const { t } = useTranslation();
   const platform = usePlatform();
   const { status, checkForUpdates, downloadAndInstall, restartAndInstall } = useAutoUpdater(false);
   const [currentVersion, setCurrentVersion] = useState<string>('');
@@ -17,21 +19,23 @@ export function UpdateStatus() {
     platform.metadata
       .getVersion()
       .then(setCurrentVersion)
-      .catch(() => setCurrentVersion('Unknown'));
-  }, [platform]);
+      .catch(() => setCurrentVersion(t('common.unknown')));
+  }, [platform, t]);
 
   return (
-    <Card role="region" aria-label="App Updates" tabIndex={0}>
+    <Card role="region" aria-label={t('settings.general.updates.title')} tabIndex={0}>
       <CardHeader>
-        <CardTitle>App Updates</CardTitle>
+        <CardTitle>{t('settings.general.updates.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <div className="text-sm font-medium">Current Version</div>
+            <div className="text-sm font-medium">
+              {t('settings.general.updates.currentVersion')}
+            </div>
             <div className="text-sm text-muted-foreground">
               v{currentVersion}
-              {isDev ? ' (dev)' : ''}
+              {isDev ? t('settings.general.updates.devSuffix') : ''}
             </div>
           </div>
           {!isDev && (
@@ -42,21 +46,21 @@ export function UpdateStatus() {
               size="sm"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${status.checking ? 'animate-spin' : ''}`} />
-              Check for Updates
+              {t('settings.general.updates.check.title')}
             </Button>
           )}
         </div>
 
         {isDev ? (
           <div className="text-sm text-muted-foreground">
-            Auto-updates are disabled in development mode.
+            {t('settings.general.updates.devMode.description')}
           </div>
         ) : (
           <>
             {status.checking && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <RefreshCw className="h-4 w-4 animate-spin" />
-                Checking for updates...
+                {t('settings.general.updates.checking')}
               </div>
             )}
 
@@ -71,14 +75,18 @@ export function UpdateStatus() {
               <div className="space-y-3 p-4 border rounded-lg bg-primary/5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-semibold">Update Available</div>
-                    <div className="text-sm text-muted-foreground">Version {status.version}</div>
+                    <div className="font-semibold">
+                      {t('settings.general.updates.availableTitle')}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('settings.general.updates.version', { version: status.version })}
+                    </div>
                   </div>
-                  <Badge>New</Badge>
+                  <Badge>{t('settings.general.updates.newBadge')}</Badge>
                 </div>
                 <Button onClick={downloadAndInstall} className="w-full" size="sm">
                   <Download className="h-4 w-4 mr-2" />
-                  Download Update
+                  {t('settings.general.updates.download.button')}
                 </Button>
               </div>
             )}
@@ -88,7 +96,7 @@ export function UpdateStatus() {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <Download className="h-4 w-4" />
-                    Downloading update...
+                    {t('settings.general.updates.downloading')}
                   </div>
                   {status.downloadProgress !== undefined && (
                     <span className="text-muted-foreground">{status.downloadProgress}%</span>
@@ -110,26 +118,27 @@ export function UpdateStatus() {
               <div className="space-y-3 p-4 border rounded-lg bg-accent/30 border-accent/50">
                 <div className="flex items-center gap-2">
                   <div>
-                    <div className="font-semibold">Update Ready to Install</div>
+                    <div className="font-semibold">{t('settings.general.updates.ready.title')}</div>
                     <div className="text-sm text-muted-foreground">
-                      Version {status.version} has been downloaded
+                      {t('settings.general.updates.ready.downloaded', {
+                        version: status.version,
+                      })}
                     </div>
                   </div>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  The app needs to restart to complete the installation. You can do this now or
-                  later at your convenience.
+                  {t('settings.general.updates.ready.restartDescription')}
                 </div>
                 <Button onClick={restartAndInstall} className="w-full" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Restart Now
+                  {t('settings.general.updates.ready.button')}
                 </Button>
               </div>
             )}
 
             {!status.available && !status.checking && !status.error && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                You're up to date
+                {t('settings.general.updates.check.upToDate')}
               </div>
             )}
           </>
