@@ -5,6 +5,10 @@
 <h1 align="center">Voicebox</h1>
 
 <p align="center">
+  English | <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
   <strong>The open-source AI voice studio.</strong><br/>
   Clone any voice. Generate speech. Dictate into any app. Talk to agents in voices you own.<br/>
   The full voice I/O stack, running locally on your machine.
